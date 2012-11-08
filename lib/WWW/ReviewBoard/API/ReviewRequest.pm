@@ -9,11 +9,7 @@ extends 'WWW::ReviewBoard::API::Base';
 
 sub raw_key { 'review_board' }
 
-has summary => (
-	is      => 'rw',
-	lazy    => 1,
-	default => sub { shift->raw->{summary} }
-);
+__PACKAGE__->raw_fields(qw/ summary /);
 
 has submitter => (
 	is      => 'rw',
