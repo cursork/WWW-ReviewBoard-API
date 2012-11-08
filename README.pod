@@ -1,0 +1,26 @@
+=head1 WWW-ReviewBoard-API
+
+Provides a Perl-ish API to the ReviewBoard REST API v2.
+
+=head2 Goal
+
+It should support an 'explorative' interaction. For example, to print out the
+names and email addresses for all the people assigned to review request #42:
+
+    my $rb = WWW::ReviewBoard::API->new(
+        url => 'http://dvm-45.broadbean.net/reviews/api/',
+        username => 'admin',
+        password => 'r3view!'
+    );
+
+    foreach my $user ($rb->review_request(42)->target_people) {
+        say $user->name . ' - ' . $user->email;
+    }
+
+Or to print the summary for all pending review requests:
+
+    foreach my $review ($rb->review_requests(status => 'pending')) {
+        say $review->summary;
+    }
+
+

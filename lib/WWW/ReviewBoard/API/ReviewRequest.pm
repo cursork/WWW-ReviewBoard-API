@@ -15,7 +15,9 @@ has raw => (
 	lazy    => 1,
 	default => sub {
 		my ($self) = @_;
-		die 'No API or URL, can\'t auto-populate self' unless $self->{api} && $self->{url};
+		if (!$self->{api} || !$self->{url}) {
+			die 'No API or URL, can\'t auto-populate review request';
+		}
 
 		my $raw = $self->api->get($self->url)->{review_request};
 		return $raw;
@@ -49,6 +51,7 @@ has target_people => (
 		my ($self) = @_;
 		my %api;
 		$api{api} = $self->api if $self->api;
+
 		return [
 			map {
 				WWW::ReviewBoard::API::User->new({ url => $_->{href}, %api })

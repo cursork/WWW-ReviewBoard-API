@@ -46,23 +46,23 @@ has ua => (
 );
 
 sub review_requests {
-	my ($self, $opts) = @_;
-	$opts ||= {};
+	my ($self, %opts) = @_;
 
-	my $requests = $self->get('/review-requests', $opts)->{review_requests};
-	return [
-		map {
-			WWW::ReviewBoard::API::ReviewRequest->new(api => $self, raw => $_)
-		} @$requests
-	];
+	my $requests = $self->get('/review-requests', %opts)->{review_requests};
+	return map {
+		WWW::ReviewBoard::API::ReviewRequest->new(api => $self, raw => $_)
+	} @$requests;
 }
 
 sub get {
-	my ($self, $path, $opts) = @_;
+	my ($self, $path, %opts) = @_;
 
-	my $query_string = CGI->new($opts)->query_string;
+	my $query_string = '';
+	if (%opts) {
+		$query_string = '?' . CGI->new(\%opts)->query_string;
+	}
 
-	my $response = $self->ua->get($self->_make_url($path) . "?$query_string");
+	my $response = $self->ua->get($self->_make_url($path) . $query_string);
 	if (!$response->is_success) {
 		die 'Failed to fetch resource: ' . $response->content;
 	}
