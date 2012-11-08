@@ -5,29 +5,14 @@ use WWW::ReviewBoard::API::User;
 
 package WWW::ReviewBoard::API::ReviewRequest;
 use Moose;
+extends 'WWW::ReviewBoard::API::Base';
 
-has api => (
-	is => 'ro'
-);
+sub raw_key { 'review_board' }
 
-has raw => (
+has summary => (
 	is      => 'rw',
 	lazy    => 1,
-	default => sub {
-		my ($self) = @_;
-		if (!$self->{api} || !$self->{url}) {
-			die 'No API or URL, can\'t auto-populate review request';
-		}
-
-		my $raw = $self->api->get($self->url)->{review_request};
-		return $raw;
-	},
-);
-
-has url => (
-	is      => 'rw',
-	lazy    => 1,
-	default => sub { shift->raw->{links}->{self}->{href} }
+	default => sub { shift->raw->{summary} }
 );
 
 has submitter => (
@@ -58,12 +43,6 @@ has target_people => (
 			} @{ $self->{raw}->{target_people} }
 		];
 	}
-);
-
-has summary => (
-	is      => 'rw',
-	lazy    => 1,
-	default => sub { shift->raw->{summary} }
 );
 
 1
