@@ -9,7 +9,7 @@ extends 'WWW::ReviewBoard::API::Base';
 
 sub raw_key { 'review_board' }
 
-__PACKAGE__->raw_fields(qw/ summary /);
+__PACKAGE__->raw_fields(qw/ id summary /);
 
 has submitter => (
 	is      => 'rw',
