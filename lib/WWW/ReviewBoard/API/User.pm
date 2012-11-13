@@ -7,6 +7,8 @@ extends 'WWW::ReviewBoard::API::Base';
 
 sub raw_key { 'user' }
 
+sub path { 'users' }
+
 __PACKAGE__->raw_fields(qw/ email /);
 
 1

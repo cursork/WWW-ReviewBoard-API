@@ -45,24 +45,34 @@ has ua => (
 	}
 );
 
-sub review_request {
-	my ($self, $id_or_url) = @_;
+my @resources = qw/ User ReviewRequest /;
+foreach my $res (@resources) {
+	no strict 'refs';
+	my $module = "WWW::ReviewBoard::API::$res";
+	eval "use $module";
+	die $@ if $@;
 
-	my %opts = ( url => $id_or_url );
-	if ($id_or_url =~ /^\d+$/) {
-		%opts = ( id => $id_or_url );
-	} elsif (!defined $id_or_url) {
-		%opts = ();
-	}
-	return WWW::ReviewBoard::API::ReviewRequest->new(api => $self, %opts);
-}
-sub review_requests {
-	my ($self, %opts) = @_;
+	*{$module->raw_key} = sub {
+		my ($self, $id_or_url) = @_;
 
-	my $requests = $self->get('/review-requests', %opts)->{review_requests};
-	return map {
-		WWW::ReviewBoard::API::ReviewRequest->new(api => $self, raw => $_)
-	} @$requests;
+		my %opts = ( url => $id_or_url );
+		if ($id_or_url =~ /^\d+$/) {
+			%opts = ( id => $id_or_url );
+		} elsif (!defined $id_or_url) {
+			%opts = ();
+		}
+
+		return $module->new(api => $self, %opts);
+	};
+
+	*{$module->raw_key_plural} = sub {
+		my ($self, %opts) = @_;
+
+		my $items = $self->get('/'.$module->path, %opts)->{$module->raw_key_plural};
+		return map {
+			$module->new(api => $self, raw => $_)
+		} @$items;
+	};
 }
 
 sub get {

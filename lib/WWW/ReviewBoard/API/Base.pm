@@ -51,6 +51,11 @@ sub raw_key {
 	die 'raw_key not implemented for class ' . ref(shift);
 }
 
+# Default to just adding an 's'
+sub raw_key_plural {
+	shift->raw_key . 's';
+}
+
 sub raw_fields {
 	my ($class, @fields) = @_;
 
