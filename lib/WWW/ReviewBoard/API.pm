@@ -45,6 +45,17 @@ has ua => (
 	}
 );
 
+sub review_request {
+	my ($self, $id_or_url) = @_;
+
+	my %opts = ( url => $id_or_url );
+	if ($id_or_url =~ /^\d+$/) {
+		%opts = ( id => $id_or_url );
+	} elsif (!defined $id_or_url) {
+		%opts = ();
+	}
+	return WWW::ReviewBoard::API::ReviewRequest->new(api => $self, %opts);
+}
 sub review_requests {
 	my ($self, %opts) = @_;
 
@@ -62,7 +73,7 @@ sub get {
 		$query_string = '?' . CGI->new(\%opts)->query_string;
 	}
 
-	my $response = $self->ua->get($self->_make_url($path) . $query_string);
+	my $response = $self->ua->get($self->make_url($path) . $query_string);
 	if (!$response->is_success) {
 		die 'Failed to fetch resource: ' . $response->content;
 	}
@@ -73,7 +84,7 @@ sub get {
 sub post {
 	my ($self, $path, $opts) = @_;
 
-	my $response = $self->ua->post($self->_make_url($path), $opts);
+	my $response = $self->ua->post($self->make_url($path), $opts);
 	if (!$response->is_success) {
 		die 'Failed to create resource: ' . $response->content;
 	}
@@ -81,11 +92,15 @@ sub post {
 	return JSON::decode_json($response->content);
 }
 
-sub _make_url {
-	my ($self, $path) = @_;
+sub make_url {
+	my ($self, $path, @parts) = @_;
+
+	if (@parts) {
+		$path .= '/' . join('/', @parts);
+	}
 
 	my $url = $self->url;
-	if ($path =~ /^\Q$url\E/) {
+	if ($path =~ /^http:/) {
 		# It's already fully qualified
 		return $path;
 	}
@@ -94,3 +109,61 @@ sub _make_url {
 }
 
 1
+__END__
+=head1 NAME
+
+WWW::ReviewBoard::API
+
+=head1 SYNOPSIS
+
+    my $rb = WWW::ReviewBoard::API->new(
+        url      => 'http://reviews.mydomain.com/api',
+        username => 'admin',
+        password => 'myp4ss'
+    );
+    my $review = $rb->review_request(45);
+    say $review->summary;
+
+=head1 DESCRIPTION
+
+Object-oriented interface to Review Board's API (v2).
+
+=head1 A NOTE ON EXCEPTIONS
+
+All resources are fetched lazily where possible. As a result, if a resource is
+not available, you will not know until you attempt to access an attribute.
+
+For example:
+
+    my $review = $rb->review_request(40); # Stub review request
+    say $rb->summary;                     # Forces fetch of resource
+    my $users = $review->target_people;   # Stubs the list of users
+    say $_->fullname for @$users;         # Fetches user resources one at a time
+
+In the above script, if the review request does not exist, it will die at line
+#2. Similarly, if a user does not exist, it will die at line #4.
+
+=head1 SUBROUTINES/METHODS
+
+=head1 DEPENDENCIES
+
+Moose!
+
+=head1 INCOMPATIBILITIES
+
+=head1 BUGS AND LIMITATIONS
+
+No deduplication of objects in memory is done. i.e. if you call...
+
+    my $review = $rb->review_requests(1);
+    my $user   = $review->submitter;
+    my @users_reviews;
+    push @users_reviews, $_ foreach @{$user->review_requests};
+
+... there will be two objects representing review request #1 in memory and
+updates to one will not be reflected in the other.
+
+This may change in a future version but currently it is expected that this
+package will mostly be used for 'read' actions, and duplicating objects avoids
+circular references.
+

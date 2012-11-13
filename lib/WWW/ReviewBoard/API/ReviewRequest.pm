@@ -7,9 +7,23 @@ package WWW::ReviewBoard::API::ReviewRequest;
 use Moose;
 extends 'WWW::ReviewBoard::API::Base';
 
-sub raw_key { 'review_board' }
+sub raw_key { 'review_request' }
 
-__PACKAGE__->raw_fields(qw/ id summary /);
+sub path { 'review-requests' }
+
+__PACKAGE__->raw_fields(qw/
+		branch
+		bugs_closed
+		changenum
+		description
+		last_updated
+		public
+		status
+		summary
+		testing_done
+		time_added
+	/);
+
 
 has submitter => (
 	is      => 'rw',
