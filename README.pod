@@ -8,7 +8,7 @@ It should support an 'explorative' interaction. For example, to print out the
 names and email addresses for all the people assigned to review request #42:
 
     my $rb = WWW::ReviewBoard::API->new(
-        url => 'http://dvm-45.broadbean.net/reviews/api/',
+        url => 'http://reviews.mydomain.com/api/',
         username => 'admin',
         password => 'r3view!'
     );
