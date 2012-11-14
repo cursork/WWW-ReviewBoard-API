@@ -68,7 +68,7 @@ foreach my $res (@resources) {
 	*{$module->raw_key_plural} = sub {
 		my ($self, %opts) = @_;
 
-		my $items = $self->get('/'.$module->path, %opts)->{$module->raw_key_plural};
+		my $items = $self->get($module->path, %opts)->{$module->raw_key_plural};
 		return map {
 			$module->new(api => $self, raw => $_)
 		} @$items;
@@ -115,7 +115,11 @@ sub make_url {
 		return $path;
 	}
 
-	return $url . $path;
+	# Hackish!
+	$url .= '/' . $path;
+	$url =~ s{//+}{/}g;
+	$url =~ s{http:/}{http://}g;
+	return $url;
 }
 
 1

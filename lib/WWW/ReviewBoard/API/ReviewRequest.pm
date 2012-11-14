@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use WWW::ReviewBoard::API::User;
+use WWW::ReviewBoard::API::ReviewRequest::Diff;
 
 package WWW::ReviewBoard::API::ReviewRequest;
 use Moose;
@@ -54,5 +55,19 @@ has target_people => (
 		];
 	}
 );
+
+sub diffs {
+	my ($self, %opts) = @_;
+
+	if (!$self->api) {
+		die 'No API provided in instantiation. Can not fetch diffs';
+	}
+
+	return [
+		map {
+			WWW::ReviewBoard::API::ReviewRequest::Diff->new(raw => $_, api => $self->api)
+		} @{ $self->api->get($self->url . '/diffs', %opts)->{'diffs'} }
+	];
+}
 
 1
