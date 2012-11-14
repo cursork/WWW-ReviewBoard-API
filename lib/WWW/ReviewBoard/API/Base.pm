@@ -83,4 +83,30 @@ sub raw_fields {
 	}
 }
 
+sub children {
+	my ($class, @children) = @_;
+
+	foreach my $package (@children) {
+		eval "use $package";
+		die $@ if $@;
+
+ 		my $child_sub = sub {
+			my ($self, %opts) = @_;
+
+			if (!$self->api) {
+				die "No API provided in instantiation. Can not fetch $package children of $class";
+			}
+
+			return [
+				map {
+					$package->new(raw => $_, api => $self->api)
+				} @{ $self->api->get($self->url . '/' . $package->path, %opts)->{$package->raw_key_plural} }
+			];
+		};
+		
+		no strict 'refs';
+		*{$class.'::'.$package->raw_key_plural} = $child_sub;
+	}
+}
+
 1
