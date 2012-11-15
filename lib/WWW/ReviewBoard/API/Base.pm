@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 
+use WWW::ReviewBoard::API::DummyLogger;
+
 package WWW::ReviewBoard::API::Base;
 use Moose;
 
@@ -44,6 +46,14 @@ has raw => (
 
 		my $raw = $self->api->get($self->url)->{$self->raw_key};
 		return $raw;
+	}
+);
+
+has log => (
+	is      => 'rw',
+	lazy    => 1,
+	default => sub {
+		return WWW::ReviewBoard::API::DummyLogger->new;
 	}
 );
 

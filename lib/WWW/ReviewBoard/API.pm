@@ -6,6 +6,7 @@ use MIME::Base64;
 use JSON;
 use CGI;
 
+use WWW::ReviewBoard::API::DummyLogger;
 use WWW::ReviewBoard::API::ReviewRequest;
 
 package WWW::ReviewBoard::API;
@@ -45,6 +46,13 @@ has ua => (
 	}
 );
 
+has log => (
+	is      => 'rw',
+	default => sub {
+		return WWW::ReviewBoard::API::DummyLogger->new;
+	}
+);
+
 my @resources = qw/ User ReviewRequest /;
 foreach my $res (@resources) {
 	no strict 'refs';
@@ -62,7 +70,7 @@ foreach my $res (@resources) {
 			%opts = ();
 		}
 
-		return $module->new(api => $self, %opts);
+		return $module->new(%opts, api => $self, log => $self->log);
 	};
 
 	*{$module->raw_key_plural} = sub {
@@ -70,7 +78,7 @@ foreach my $res (@resources) {
 
 		my $items = $self->get($module->path, %opts)->{$module->raw_key_plural};
 		return map {
-			$module->new(api => $self, raw => $_)
+			$module->new(api => $self, raw => $_, log => $self->log)
 		} @$items;
 	};
 }
@@ -159,11 +167,53 @@ In the above script, if the review request does not exist, it will die at line
 
 =head1 SUBROUTINES/METHODS
 
+=over
+
+=item * new()
+
+Constructor. Accepted arguments:
+
+=over
+
+=item * url (required)
+
+Location of ReviewBoard API.
+
+=item * username (required)
+
+Username to act on behalf of.
+
+=item * password (required)
+
+Password of above user.
+
+=item * log (optional)
+
+If supplied, this must be an instantiated logger object. The object must
+expose the following four methods: debug(), info(), warn() and error().
+L<Log::Any>, L<Log::Dispatch> or L<Log::Log4perl> should all be fine.
+
+By default, no logging happens at all.
+
+=back
+
+=back
+
 =head1 DEPENDENCIES
 
-Moose!
+=over
 
-=head1 INCOMPATIBILITIES
+=item * JSON
+
+=item * LWP::UserAgent
+
+=item * Moose
+
+=item * Test::Most
+
+=item * Test::MockObject
+
+=back
 
 =head1 BUGS AND LIMITATIONS
 
@@ -175,7 +225,7 @@ No deduplication of objects in memory is done. i.e. if you call...
     push @users_reviews, $_ foreach @{$user->review_requests};
 
 ... there will be two objects representing review request #1 in memory and
-updates to one will not be reflected in the other.
+updates to one will B<not> be reflected in the other.
 
 This may change in a future version but currently it is expected that this
 package will mostly be used for 'read' actions, and duplicating objects avoids
