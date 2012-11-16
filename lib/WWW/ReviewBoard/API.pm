@@ -7,7 +7,6 @@ use JSON;
 use CGI;
 
 use WWW::ReviewBoard::API::DummyLogger;
-use WWW::ReviewBoard::API::ReviewRequest;
 
 package WWW::ReviewBoard::API;
 use Moose;
@@ -53,7 +52,7 @@ has log => (
 	}
 );
 
-my @resources = qw/ User ReviewRequest /;
+my @resources = qw/ User ReviewRequest Repository /;
 foreach my $res (@resources) {
 	no strict 'refs';
 	my $module = "WWW::ReviewBoard::API::$res";
@@ -76,7 +75,7 @@ foreach my $res (@resources) {
 	*{$module->raw_key_plural} = sub {
 		my ($self, %opts) = @_;
 
-		my $items = $self->get($module->path, %opts)->{$module->raw_key_plural};
+		my $items = $self->get($module->url_path, %opts)->{$module->raw_key_plural};
 		return map {
 			$module->new(api => $self, raw => $_, log => $self->log)
 		} @$items;
@@ -91,10 +90,15 @@ sub get {
 		$query_string = '?' . CGI->new(\%opts)->query_string;
 	}
 
-	my $response = $self->ua->get($self->make_url($path) . $query_string);
+	my $request = $self->make_url($path) . $query_string;
+	$self->log->info("Sending HTTP request: $request");
+
+	my $response = $self->ua->get($request);
 	if (!$response->is_success) {
 		die 'Failed to fetch resource: ' . $response->content;
 	}
+
+	$self->log->debug('Response status = '.$response->code.". Content: ".$response->content);
 
 	return JSON::decode_json($response->content);
 }
@@ -106,6 +110,8 @@ sub post {
 	if (!$response->is_success) {
 		die 'Failed to create resource: ' . $response->content;
 	}
+
+	$self->log->debug('Response status = '.$response->code.". Content: ".$response->content);
 
 	return JSON::decode_json($response->content);
 }

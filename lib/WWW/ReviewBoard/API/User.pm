@@ -7,7 +7,7 @@ extends 'WWW::ReviewBoard::API::Base';
 
 sub raw_key { 'user' }
 
-sub path { 'users' }
+sub url_path { 'users' }
 
 __PACKAGE__->raw_fields(qw/
 		avatar_url

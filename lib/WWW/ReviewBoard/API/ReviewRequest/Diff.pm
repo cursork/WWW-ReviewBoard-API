@@ -7,7 +7,7 @@ extends 'WWW::ReviewBoard::API::Base';
 
 sub raw_key { 'diff' }
 
-sub path { 'diffs' }
+sub url_path { 'diffs' }
 
 __PACKAGE__->raw_fields(qw/
 		name

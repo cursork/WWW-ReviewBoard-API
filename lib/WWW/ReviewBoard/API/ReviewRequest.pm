@@ -9,7 +9,7 @@ extends 'WWW::ReviewBoard::API::Base';
 
 sub raw_key { 'review_request' }
 
-sub path { 'review-requests' }
+sub url_path { 'review-requests' }
 
 __PACKAGE__->raw_fields(qw/
 		branch

@@ -7,7 +7,7 @@ extends 'WWW::ReviewBoard::API::Base';
 
 sub raw_key { 'review' }
 
-sub path { 'reviews' }
+sub url_path { 'reviews' }
 
 __PACKAGE__->raw_fields(qw/
 		body_bottom

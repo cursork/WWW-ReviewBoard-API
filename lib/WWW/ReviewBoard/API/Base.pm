@@ -30,7 +30,7 @@ has url => (
 			return $self->raw->{links}->{self}->{href};
 		} elsif ($self->{id}) {
 			# Instantiated with ID
-			return $self->api->make_url($self->path, $self->id);
+			return $self->api->make_url($self->url_path, $self->id);
 		} else {
 			die 'Not instantiated with \'id\' or \'raw\' data. Can\'t construct URL.';
 		}
@@ -110,7 +110,7 @@ sub children {
 			return [
 				map {
 					$package->new(raw => $_, api => $self->api)
-				} @{ $self->api->get($self->url . '/' . $package->path, %opts)->{$package->raw_key_plural} }
+				} @{ $self->api->get($self->url . '/' . $package->url_path, %opts)->{$package->raw_key_plural} }
 			];
 		};
 		
