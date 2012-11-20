@@ -25,7 +25,7 @@ __PACKAGE__->raw_fields(qw/
 	/);
 
 __PACKAGE__->children(
-	map {__PACKAGE__ . '::' . $_} qw/ Diff Review /
+	map {__PACKAGE__ . '::' . $_} qw/ Diff Review Change /
 );
 
 has submitter => (

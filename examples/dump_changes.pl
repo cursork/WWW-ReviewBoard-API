@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use Data::Dumper;
 use Getopt::Long;
 use Term::Prompt;
 use WWW::ReviewBoard::API;
@@ -45,9 +46,4 @@ my $rb = WWW::ReviewBoard::API->new(
 );
 
 my $rr = $rb->review_request($review_id);
-foreach my $review (@{ $rr->reviews }) {
-	print 'Review ', $review->id, ' ', $review->timestamp, ($review->ship_it ? ' (SHIP IT!)' : ''), "\n";
-	print $review->body_bottom, "\n";
-	print $review->body_top, "\n";
-	print "===================\n\n";
-}
+print Data::Dumper->Dump([map { $_->fields_changed } @{ $rr->changes }]);
