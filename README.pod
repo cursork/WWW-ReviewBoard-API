@@ -8,7 +8,7 @@ It should support an 'explorative' interaction. For example, to print out the
 names and email addresses for all the people assigned to review request #42:
 
     my $rb = WWW::ReviewBoard::API->new(
-        url => 'http://dvm-45.broadbean.net/reviews/api/',
+        url => 'http://reviews.mydomain.com/api/',
         username => 'admin',
         password => 'r3view!'
     );
@@ -23,4 +23,21 @@ Or to print the summary for all pending review requests:
         say $review->summary;
     }
 
+=head2 Testing
 
+Note that the tests under t/1_functional require a running ReviewBoard instance
+(otherwise they will be skipped). Note that this should be a dedicated test
+instance as reviews, users, etc. will be created automatically.
+
+The instance to use can be defined by setting the following environment
+variables:
+
+=over
+
+=item REVIEWBOARD_URL
+
+=item REVIEWBOARD_USER
+
+=item REVIEWBOARD_PASS
+
+=back

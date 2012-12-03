@@ -5,6 +5,7 @@ use Data::Dumper;
 use Getopt::Long;
 use Term::Prompt;
 use WWW::ReviewBoard::API;
+use Carp::Always;
 
 GetOptions(
 	'url=s'  => \(my $url),
@@ -29,14 +30,15 @@ my $rb = WWW::ReviewBoard::API->new(
 	password => $pass,
 );
 
-my $req;
+my $repo;
 if ($id) {
 	# Grab the first one that comes to hand...
-	$req = $rb->review_request($id);
+	$repo = $rb->repository($id);
 } else {
-	$req = ($rb->review_requests)[0];
+	$repo = ($rb->repositories)[0];
 }
 
-print 'Grabbed ID: ', $req->id, '. Summary: ', $req->summary, "\n";
+foreach (qw/ id name path tool /) {
+	print ucfirst($_), ': ', $repo->$_, "\n";
+}
 
-print Data::Dumper->Dump([$req]);

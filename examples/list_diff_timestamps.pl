@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 
-use Data::Dumper;
 use Getopt::Long;
 use Term::Prompt;
 use WWW::ReviewBoard::API;
@@ -12,15 +11,17 @@ GetOptions(
 	'pass=s' => \(my $pass),
 );
 
-my ($id) = @ARGV;
-
 if ($url !~ m{api/?$}) {
 	$url .= '/api/';
 }
 
 if (!$pass) {
 	$pass = prompt('x', 'Password?', '', '');
-	chomp $pass;
+}
+
+my $review_id = $ARGV[0];
+if (!$review_id) {
+	$review_id = prompt('x', 'Review Request ID?', '', '');
 }
 
 my $rb = WWW::ReviewBoard::API->new(
@@ -29,14 +30,7 @@ my $rb = WWW::ReviewBoard::API->new(
 	password => $pass,
 );
 
-my $req;
-if ($id) {
-	# Grab the first one that comes to hand...
-	$req = $rb->review_request($id);
-} else {
-	$req = ($rb->review_requests)[0];
+my $rr = $rb->review_request($review_id);
+foreach my $diff (@{ $rr->diffs }) {
+	print $diff->revision . ': ' . $diff->timestamp . "\n";
 }
-
-print 'Grabbed ID: ', $req->id, '. Summary: ', $req->summary, "\n";
-
-print Data::Dumper->Dump([$req]);
