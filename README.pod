@@ -1,6 +1,7 @@
 =head1 WWW-ReviewBoard-API
 
-Provides a Perl-ish API to the ReviewBoard REST API v2.
+Provides a Perl-ish API to the
+L<Review Board REST API v2|http://www.reviewboard.org/docs/manual/dev/webapi/>
 
 =head2 Goal
 
@@ -23,11 +24,18 @@ Or to print the summary for all pending review requests:
         say $review->summary;
     }
 
+For more details start by reading at the WWW::ReviewBoard::API POD.
+
 =head2 Testing
 
-Note that the tests under t/1_functional require a running ReviewBoard instance
-(otherwise they will be skipped). Note that this should be a dedicated test
-instance as reviews, users, etc. will be created automatically.
+The unit tests should be all you need to be confident that the distribution
+will install.
+
+However, there are tests which are designed to be used against a running Review
+Board instance. These tests exist under t/1_functional.
+
+Note that this should be a dedicated test instance as reviews, users, etc. will
+be created automatically.
 
 The instance to use can be defined by setting the following environment
 variables:
