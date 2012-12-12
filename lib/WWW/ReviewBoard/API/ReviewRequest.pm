@@ -28,6 +28,8 @@ __PACKAGE__->children(
 	map {__PACKAGE__ . '::' . $_} qw/ Diff Review Change /
 );
 
+__PACKAGE__->has_draft;
+
 has submitter => (
 	is      => 'rw',
 	lazy    => 1,

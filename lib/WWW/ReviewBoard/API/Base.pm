@@ -119,4 +119,17 @@ sub children {
 	}
 }
 
+# Install a 'draft()' method that will return a *::Draft object
+sub has_draft {
+	my ($class) = @_;
+
+	my $draft_class = "${class}::Draft";
+
+	no strict 'refs';
+	*{"${class}::draft"} = sub {
+		my ($self) = @_;
+		return $draft_class->new(parent => $self);
+	}
+}
+
 1
