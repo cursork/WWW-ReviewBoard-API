@@ -17,4 +17,8 @@ __PACKAGE__->raw_fields(qw/
 		timestamp
 	/);
 
+__PACKAGE__->children(
+	map {__PACKAGE__ . '::' . $_} qw/ DiffComment /
+);
+
 1
