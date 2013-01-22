@@ -34,8 +34,8 @@ will install.
 However, there are tests which are designed to be used against a running Review
 Board instance. These tests exist under t/1_functional.
 
-Note that this should be a dedicated test instance as reviews, users, etc. will
-be created automatically.
+Note that this should be a dedicated test instance as reviews, users, etc.
+might be created automatically in the future.
 
 The instance to use can be defined by setting the following environment
 variables:
@@ -49,3 +49,7 @@ variables:
 =item REVIEWBOARD_PASS
 
 =back
+
+=head2 Limitations
+
+Currently only supports read-only interaction with ReviewBoard.

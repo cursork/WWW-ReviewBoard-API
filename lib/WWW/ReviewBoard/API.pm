@@ -158,18 +158,16 @@ Object-oriented interface to Review Board's API (v2).
 
 =head1 A NOTE ON EXCEPTIONS
 
-All resources are fetched lazily where possible. As a result, if a resource is
+Many resources are fetched lazily when possible. As a result, if a resource is
 not available, you will not know until you attempt to access an attribute.
 
 For example:
 
     my $review = $rb->review_request(40); # Stub review request
     say $rb->summary;                     # Forces fetch of resource
-    my $users = $review->target_people;   # Stubs the list of users
-    say $_->fullname for @$users;         # Fetches user resources one at a time
 
 In the above script, if the review request does not exist, it will die at line
-#2. Similarly, if a user does not exist, it will die at line #4.
+#2.
 
 =head1 SUBROUTINES/METHODS
 
